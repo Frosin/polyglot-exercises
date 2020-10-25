@@ -32,7 +32,7 @@ type (
 )
 
 func is3Person(key string) bool {
-	return key == "He" || key == "She" || key == "They"
+	return key == "He" || key == "She"
 }
 
 func GetQuestionPresent(w Word, rusComb, engComb Combination) []Phrases {
