@@ -6,6 +6,7 @@ import (
 	"math/rand"
 	"net/http"
 	"os"
+	"strings"
 	"time"
 
 	"github.com/Frosin/polyglot-exercises/core"
@@ -42,12 +43,33 @@ var (
 )
 
 func getRandomResult(w http.ResponseWriter, r *http.Request) {
+	var finalForm = core.Form
+
+	if r.URL.Path != "/" {
+		return
+	}
+	translateText := r.FormValue("translate")
+	resultText := r.FormValue("result")
+	phraseText := r.FormValue("phrase")
+
+	if resultText != "" && resultText != translateText {
+		finalForm = strings.ReplaceAll(finalForm, "%phrase%", phraseText)
+		finalForm = strings.ReplaceAll(finalForm, "%result%", resultText)
+		finalForm = strings.ReplaceAll(finalForm, "%correct%", "Правильный перевод: "+resultText)
+		fmt.Fprintf(w, "%s", finalForm)
+		return
+	}
+
 	randomPhrases := arPhrases[rand.Intn(len(arPhrases))]
 	randomWord := core.Words[rand.Intn(len(core.Words))]
 	result := randomPhrases(randomWord, rusPronouns, engPronouns)
 	randomPhrase := result[rand.Intn(len(result))]
 
-	fmt.Fprintf(w, "%s: %s", randomPhrase.Eng, randomPhrase.Rus)
+	finalForm = strings.ReplaceAll(finalForm, "%phrase%", randomPhrase.Rus)
+	finalForm = strings.ReplaceAll(finalForm, "%result%", randomPhrase.Eng)
+	finalForm = strings.ReplaceAll(finalForm, "%correct%", "")
+	finalForm = strings.ReplaceAll(finalForm, "is-invalid", "")
+	fmt.Fprintf(w, "%s", finalForm)
 }
 
 func main() {
