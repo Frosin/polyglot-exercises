@@ -48,7 +48,7 @@ func GetQuestionPresent(w Word, rusComb, engComb Combination) []Phrases {
 		link := "do"
 
 		if is3Person(i) {
-			verb = w.eng3Person
+			verb = w.engBase
 			link = "does"
 		}
 
